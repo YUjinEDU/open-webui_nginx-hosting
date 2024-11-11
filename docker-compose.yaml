@@ -1,0 +1,49 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80" # HTTP 기본 포트
+      - "443:443" # HTTPS 기본 포트
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # nginx 설정 파일을 지정하는 부분입니다. 기본 위치를 변경하지 않는 것을 추천합니다.
+      - ./nginx/certs:/etc/ssl/certs # SSL 인증서 폴더 위치
+      - ./nginx/logs:/var/log/nginx # Nginx 로그 폴더 위치
+    depends_on:
+      - open-webui # open-webui 서비스가 시작된 후 nginx가 시작됩니다.
+      - ollama # ollama 서비스가 시작된 후 nginx가 시작됩니다.
+    restart: unless-stopped # 컨테이너가 중지된 경우 자동 재시작합니다.
+
+  ollama:
+    volumes:
+      - ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest} # OLLAMA_DOCKER_TAG를 사용해 버전을 설정할 수 있습니다.
+
+  open-webui:
+    build:
+      context: .
+      args:
+        OLLAMA_BASE_URL: '/ollama'
+      dockerfile: Dockerfile
+    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    container_name: open-webui
+    volumes:
+      - open-webui:/app/backend/data
+    depends_on:
+      - ollama # ollama 서비스가 먼저 시작된 후 open-webui가 시작됩니다.
+    ports:
+      - ${OPEN_WEBUI_PORT-3000}:8080 # Open WebUI를 사용할 포트를 설정합니다. 기본적으로 3000번 포트로 열립니다.
+    environment:
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'WEBUI_SECRET_KEY=' # WebUI 보안 키를 설정하는 곳입니다. 필수는 아니지만 보안을 위해 추가할 수 있습니다.
+    extra_hosts:
+      - host.docker.internal:host-gateway # 도커 내부에서 호스트에 접근할 수 있도록 설정합니다.
+    restart: unless-stopped # 중지된 경우 컨테이너가 자동 재시작됩니다.
+
+volumes:
+  ollama: {}
+  open-webui: {}
