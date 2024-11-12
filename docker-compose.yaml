@@ -9,6 +9,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf # nginx 설정 파일을 지정하는 부분입니다. 기본 위치를 변경하지 않는 것을 추천합니다.
       - ./nginx/certs:/etc/ssl/certs # SSL 인증서 폴더 위치
       - ./nginx/logs:/var/log/nginx # Nginx 로그 폴더 위치
+    environment:
+      - DOMAIN=${DOMAIN} # 🌟 도메인 환경 변수 설정 🌟
     depends_on:
       - open-webui # open-webui 서비스가 시작된 후 nginx가 시작됩니다.
       - ollama # ollama 서비스가 시작된 후 nginx가 시작됩니다.

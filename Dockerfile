@@ -44,6 +44,7 @@ ARG USE_EMBEDDING_MODEL
 ARG USE_RERANKING_MODEL
 ARG UID
 ARG GID
+ARG DOMAIN
 
 ## Basis ##
 ENV ENV=prod \
@@ -149,7 +150,15 @@ RUN pip3 install uv && \
     fi; \
     chown -R $UID:$GID /app/backend/data/
 
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
+RUN sed -i "s/\${DOMAIN}/${DOMAIN}/g" /etc/nginx/nginx.conf
+
+# 인증서 생성
+RUN mkdir -p /etc/ssl/certs && \
+    openssl genrsa -out /etc/ssl/certs/${DOMAIN}.key 2048 && \
+    openssl req -new -key /etc/ssl/certs/${DOMAIN}.key -out /etc/ssl/certs/${DOMAIN}.csr -subj "/CN=${DOMAIN}" && \
+    openssl x509 -req -days 365 -in /etc/ssl/certs/${DOMAIN}.csr -signkey /etc/ssl/certs/${DOMAIN}.key -out /etc/ssl/certs/${DOMAIN}.crt
 
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2

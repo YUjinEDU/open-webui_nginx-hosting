@@ -10,4 +10,4 @@
 # 인증서 자체 서명 (유효기간: 365일)
 ```
 openssl x509 -req -days 365 -in ./nginx/certs/mydomain.csr -signkey ./nginx/certs/mydomain.key -out ./nginx/certs/mydomain.crt
-```
+``` 
