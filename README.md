@@ -60,6 +60,7 @@ docker run -d -p 3000:8080 -e OPENAI_API_KEY=your_secret_key -e DOMAIN=your-doma
 2가지를 작성하고 실행 해야 합니다.
 
 `OPENAI_API_KEY =your_secret_key`
+
 `DOMAIN=your-domain-address`
 
 your_secret_key는 api키
