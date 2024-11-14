@@ -56,7 +56,7 @@ Streamlit을 사용하여 웹 사이트를 만들어 Chat GPT 페이지처럼 �
 ### Docker 실행
 
 ```sh
-docker run -d -p 80:8080 -e OPENAI_API_KEY=your_secret_key -e DOMAIN=your-domain-address -v open-webui:/app/backend/data --name open-webui --restart always your-dockerhub-username/open-webui-nginx:1.0
+docker run -d -p 80:8080 -e OPENAI_API_KEY=your_secret_key -e DOMAIN=your-domain-address -v open-webui:/app/backend/data --name open-webui --restart always homesever/open-webui-nginx:1.0
 ```
 2가지를 작성하고 실행 해야 합니다.
 
